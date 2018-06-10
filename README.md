@@ -16,3 +16,5 @@ And we're making progress with the data analysis via Pandas. Ideas:
 - Check how they rose against how they died for strong correlations (use linear regression module);
 - Like with Footprint app, let user choose a category (e.g. cause of death), a particular (assassination), and then a slice (province of birth, killer, length of reign -- though this would want to chunked into like 0-5, 5-10 years, etc.);
 - Map chronologically as a kind of diagonal, with reign colored bold and lifespan colored lightly. Different color by dynasty.
+- Avg. length of reign by killer, by dynasty
+- Chart causes of death as lines against time.
