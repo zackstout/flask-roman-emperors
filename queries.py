@@ -165,6 +165,43 @@ reignByDyn()
 
 
 
+
+# Thank you https://www.dataquest.io/blog/pandas-python-tutorial/:
+# - df.iloc
+# -reviews.loc[:5,["score", "release_year"]]
+# -reviews[["score", "release_year"]]
+# -Create a df by passing multiple series to the DF constructor
+# -reviews["score"].mean()
+# -reviews.mean()
+# -pandas.DataFrame.corr — finds the correlation between columns in a DataFrame.
+# -pandas.DataFrame.count — counts the number of non-null values in each DataFrame column.
+# -pandas.DataFrame.max — finds the highest value in each column.
+# -pandas.DataFrame.min — finds the lowest value in each column.
+# -pandas.DataFrame.median — finds the median of each column.
+# -pandas.DataFrame.std — finds the standard deviation of each column.
+# -score_filter = reviews["score"] > 7
+# -filtered_reviews = reviews[score_filter]
+# -xbox_one_filter = (reviews["score"] > 7) & (reviews["platform"] == "Xbox One")
+# reviews[reviews["platform"] == "Xbox One"]["score"].plot(kind="hist")
+# filtered_reviews["score"].hist()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # box/whisker -- Wow this is amazing:
 # df.plot(kind='box', subplots=True, layout=(3, 3), sharex=False, sharey=False)
 # plt.show()
