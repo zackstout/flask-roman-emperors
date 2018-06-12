@@ -162,7 +162,16 @@ def reignByDyn():
 reignByDyn()
 
 
+def playWithGB():
+    dyns = df.groupby('dynasty').mean()
+    print(dyns)
 
+    # Same result as above:
+    dyns2 = df.groupby('dynasty').agg(np.mean)
+    print(dyns2)
+
+    # Hmm only getting one column....
+    # print(df.corr())
 
 
 
