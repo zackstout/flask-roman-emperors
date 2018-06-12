@@ -200,6 +200,10 @@ def playWithGB():
 
 
 
+# Dictionaries can be converted easily into Series.
+# Boolean indexing: cities[cities > 1000]
+# Pass a dictionary of lists to the Dataframes constructor
+
 
 
 

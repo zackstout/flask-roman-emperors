@@ -8,8 +8,42 @@
     <h2>Flask!!! {{taco}}</h2>
   </body>
 
+  <input type="text" id="in1" name="" value="">
+  <input type="text" id="in2" name="" value="">
+  <button type="button" id="sub1" name="button"></button>
+
+  <div class="res">
+
+  </div>
+
+  <!-- jQuery: -->
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous">
+  </script>
   <script type="text/javascript">
-    console.log('what up tho')
+    console.log('what up tho');
+
+    $(document).ready(function() {
+      $('#sub1').on('click', function() {
+        val1 = $('#in1').val();
+        val2 = $('#in2').val();
+        console.log(val1, val2);
+
+        // Oooh right, the whole point of Ajax is *not* to change the URL...
+        $.get(`/stuff?val1=${val1}&val2=${val2}`)
+        // $.get('/hi')
+        .done(function(res) {
+          console.log(res);
+          // Oooooh of course, need to restart the server when we make *any* changes now.
+          $(".res").append(res)
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+      });
+    });
   </script>
 
 </html>

@@ -10,6 +10,7 @@ df = pd.read_csv('emperors.csv', index_col=0, encoding='latin-1')
 from flask import Flask
 from flask import render_template
 from flask import make_response
+from flask import request
 app = Flask(__name__)
 
 @app.route("/")
@@ -20,6 +21,22 @@ def hello():
 @app.route('/hi')
 def hi():
     return "<h2>whatup</h2>"
+
+# This works correctly when we hit the route manually, but not when we ping it via AJAX...
+@app.route('/stuff')
+def yo():
+    val1 = request.args.get('val1')
+    val2 = request.args.get('val2')
+    return "<h2>%s, %s</h2>" % (val1, val2)
+
+
+
+
+
+
+
+
+
 
 
 # Thanks SO:
@@ -51,11 +68,6 @@ def simple():
     response = make_response(png_output.getvalue()) # Note: must import this
     response.headers['Content-Type'] = 'image/png'
     return response
-
-
-
-
-
 
 
 
