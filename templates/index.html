@@ -8,6 +8,7 @@
     <h2>Flask!!! {{taco}}</h2>
   </body>
 
+  <!-- For the mean query: -->
   <select class="target-avg">
     <option value="cause" selected="selected">Cause of Death</option>
     <option value="killer">Killer</option>
@@ -18,9 +19,9 @@
   <button type="button" id="sub1" name="button">QUERY ME</button>
 
   <div class="res">
-
   </div>
 
+  <!-- For the variable slicing query: -->
   <div class="drops">
     <select class="target1">
       <option value="cause" selected="selected">Cause of Death</option>
@@ -31,11 +32,9 @@
     </select>
 
     <select class="target2">
-
     </select>
 
     <select class="target3">
-
     </select>
     <button type="button" name="button" class="subQuery">QUERY YOU</button>
   </div>
@@ -46,16 +45,21 @@
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous">
   </script>
+
+  <!-- Javascript: -->
   <script type="text/javascript">
     console.log('what up tho');
 
     $(document).ready(function() {
-      // Load up the second and third selector:
+
+      // Load up the second and third selectors:
       var all = ['killer', 'birth.prv', 'dynasty', 'rise'];
       $.get(`/getParticulars?part=cause`)
       .done(function(res) {
         res.split(',').forEach(item => {
           item = item.replace(/[\'\"\{\}\]\[]/g, '');
+          item = item.trim();
+          item = item.replace(/\s/g, '_');
           $('.target2').append(`<option value=${item}>${item}</option>`);
         });
         all.forEach(item => {
@@ -70,24 +74,23 @@
       $('.target1').change(function() {
         var all = ['cause', 'killer', 'birth.prv', 'dynasty', 'rise'];
 
-        console.log($('.target1').val());
         var choice = $('.target1').val();
         // Ok splice doesn't return a new array, just mutates the original one:
         var all_reduced = all.splice(all.indexOf(choice), 1);
-        console.log(all_reduced, all);
 
         $.get(`/getParticulars?part=${choice}`)
         .done(function(res) {
-          // console.log(res, typeof(res));
+          // Don't forget to clear out values before appending:
           $('.target2').empty();
           $('.target3').empty();
 
-          // Don't forget to clear out values before appending:
           res.split(',').forEach(item => {
             item = item.replace(/[\'\"\{\}\]\[]/g, '');
-            // console.log(item);
+            item = item.trim();
+            item = item.replace(/\s/g, '_');
             $('.target2').append(`<option value=${item}>${item}</option>`);
           });
+          // Populate third slicing selector:
           all.forEach(item => {
             $('.target3').append(`<option value=${item}>${item}</option>`);
           });
@@ -97,7 +100,7 @@
         });
       });
 
-      // This should actually be a submit button:
+      // This should actually be a submit button, not a change listener:
       $('.subQuery').on('click', function() {
         var type = $('.target1').val();
         var choice = $('.target2').val();
@@ -114,14 +117,10 @@
 
       // Just testing stuff:
       $('#sub1').on('click', function() {
-        // val1 = $('#in1').val();
-        // val2 = $('#in2').val();
-        // console.log(val1, val2);
         var choice = $('.target-avg').val();
 
         // Oooh right, the whole point of Ajax is *not* to change the URL...
         $.get('/dataframe?choice=' + choice)
-        // $.get('/hi')
         .done(function(res) {
           console.log(res);
           // Oooooh of course, need to restart the server when we make *any* changes now.

@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 style.use('fivethirtyeight')
 
+import re
+
 df = pd.read_csv('emperors.csv', index_col=0, encoding='latin-1')
 
 from flask import Flask
@@ -52,9 +54,13 @@ def there(): # Interesting, names of these functions must be unique (across all 
     choice_x = request.args.get('choice')
     slice_x = request.args.get('slice')
 
+    type_space = re.sub('_', ' ', type_x)
+    choice_space = re.sub('_', ' ', choice_x)
+    slice_space = re.sub('_', ' ', slice_x)
+
     # Incredible: this is all we need to replicate the functionality that required sooooo much Node/PostgreSQL code...
-    specific = df[df[type_x] == choice_x]
-    result = specific.groupby(slice_x).count()['name']
+    specific = df[df[type_space] == choice_space]
+    result = specific.groupby(slice_space).count()['name']
     # I'm also surprised at how fast it is, given how long Python takes to spin up every time.
     return str(result)
 
@@ -164,36 +170,36 @@ def df_stuff():
 
 
 # Thanks SO:
-@app.route('/plot')
-def simple():
-    import datetime
-    from io import BytesIO # Had to use this instead of StringIO
-    import random
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
-    from matplotlib.dates import DateFormatter
+# @app.route('/plot')
+# def simple():
+#     import datetime
+#     from io import BytesIO # Had to use this instead of StringIO
+#     import random
+#     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+#     from matplotlib.figure import Figure
+#     from matplotlib.dates import DateFormatter
+#
+#     fig = Figure()
+#     ax = fig.add_subplot(111)
+#     x = []
+#     y = []
+#     now=datetime.datetime.now()
+#     delta=datetime.timedelta(days=1)
+#     for i in range(10):
+#         x.append(now)
+#         now += delta
+#         y.append(random.randint(0, 1000))
+#     ax.plot_date(x, y, '-')
+#     ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
+#     fig.autofmt_xdate()
+#     canvas=FigureCanvas(fig)
+#     png_output = BytesIO() # Change to Bytes and delete method call
+#     canvas.print_png(png_output)
+#     response = make_response(png_output.getvalue()) # Note: must import this
+#     response.headers['Content-Type'] = 'image/png'
+#     return response
 
-    fig = Figure()
-    ax = fig.add_subplot(111)
-    x = []
-    y = []
-    now=datetime.datetime.now()
-    delta=datetime.timedelta(days=1)
-    for i in range(10):
-        x.append(now)
-        now += delta
-        y.append(random.randint(0, 1000))
-    ax.plot_date(x, y, '-')
-    ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
-    fig.autofmt_xdate()
-    canvas=FigureCanvas(fig)
-    png_output = BytesIO() # Change to Bytes and delete method call
-    canvas.print_png(png_output)
-    response = make_response(png_output.getvalue()) # Note: must import this
-    response.headers['Content-Type'] = 'image/png'
-    return response
 
-
-
+# This checks whether the script is being run directly or being called by another module:
 if __name__ == "__main__":
     app.run()
