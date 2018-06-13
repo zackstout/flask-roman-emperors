@@ -32,7 +32,7 @@ def yo():
 
 
 
-# NOTE: problem with "rise" because of ...multiple words? I'm pretty sure.
+# NOTE: problem with "rise" because of ...multiple words? I'm pretty sure. Yeah, and multiple words break other queries as well. That's surely it.
 
 
 
@@ -55,8 +55,89 @@ def there(): # Interesting, names of these functions must be unique (across all 
     # Incredible: this is all we need to replicate the functionality that required sooooo much Node/PostgreSQL code...
     specific = df[df[type_x] == choice_x]
     result = specific.groupby(slice_x).count()['name']
-
+    # I'm also surprised at how fast it is, given how long Python takes to spin up every time.
     return str(result)
+
+
+
+
+# ADDING LIFESPANS AND REIGN-LENGTHS TO THE DATAFRAME -- should def be in own file/module:
+spans = []
+
+def getSpan(term):
+    for row in df.iterrows():
+        if term == 'life':
+            start = row[1]['birth']
+            end = row[1]['death']
+        elif term == 'reign':
+            start = row[1]['reign.start']
+            end = row[1]['reign.end']
+
+        if start == 'nan' or end == 'nan' or type(start).__name__ == 'float' or type(end).__name__ == 'float':
+            global spans
+            spans.append(0) # Changing this from 'nan' to 0 allows lifespans to be calculated numerically...will distort it somewhat, though.
+            continue
+
+        start = start.split('-')
+        end = end.split('-')
+
+        # This takes care of the BC problem, after also adding five "NEG"s to our csv:
+        if 'NEG' in start[0]:
+            start[0] = -(int(start[0][3:]))
+        if 'NEG' in end[0]:
+            end[0] = -(int(end[0][3:]))
+
+        span = dict()
+        span['years'] = int(end[0]) - int(start[0])
+        span['months'] = int(end[1]) - int(start[1])
+        span['days'] = int(end[2]) - int(start[2])
+
+        if (span['months'] < 0):
+            span['months'] = 12 + span['months']
+            span['years'] -= 1
+
+        if (span['days'] < 0):
+            span['days'] = 30 + span['days']
+            span['months'] -= 1
+
+        days_in_term = span['years'] * 365 + span['months'] * 30 + span['days']
+
+        spans.append(days_in_term)
+
+def getReignLengths():
+    getSpan('reign')
+
+def getLifeSpans():
+    getSpan('life')
+
+def addToDF():
+    global spans
+    getLifeSpans()
+    df['lifespan'] = pd.Series(spans, index=df.index)
+
+    spans = []
+    getReignLengths()
+    df['reign'] = pd.Series(spans, index=df.index)
+    # print(df.head())
+
+
+# If we call this inside the route, it errors out the second time we try to ping it:
+addToDF()
+
+
+# Ideas: get average life/reign-span split by category (e.g. dynasty, cause of death...)
+
+
+@app.route('/dataframe')
+def df_stuff():
+    # return df.to_json(orient='split')
+
+    choice = request.args.get('choice')
+    res = df.groupby(choice).mean()
+    return str(res)
+
+
+
 
 
 
@@ -71,6 +152,11 @@ def there(): # Interesting, names of these functions must be unique (across all 
 # print(df.groupby('cause').count()['name'].sum())
 # # Tells us how many assassinations we have:
 # print(df[df['cause'] == 'Assassination'].count()['name'])
+
+# Next steps:
+# - Bring in (debugged) lifespan and reign-length to do correlation and averaging with those
+# - use a display library like chart.js or d3 for visualization/interaction with the data
+
 
 
 

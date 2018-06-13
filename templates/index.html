@@ -8,9 +8,14 @@
     <h2>Flask!!! {{taco}}</h2>
   </body>
 
-  <input type="text" id="in1" name="" value="">
-  <input type="text" id="in2" name="" value="">
-  <button type="button" id="sub1" name="button">sub</button>
+  <select class="target-avg">
+    <option value="cause" selected="selected">Cause of Death</option>
+    <option value="killer">Killer</option>
+    <option value="birth.prv">Birth province</option>
+    <option value="dynasty">Dynasty</option>
+    <option value="rise">How rise</option>
+  </select>
+  <button type="button" id="sub1" name="button">QUERY ME</button>
 
   <div class="res">
 
@@ -32,7 +37,7 @@
     <select class="target3">
 
     </select>
-    <button type="button" name="button" class="subQuery">QUERY</button>
+    <button type="button" name="button" class="subQuery">QUERY YOU</button>
   </div>
 
   <!-- jQuery: -->
@@ -109,17 +114,18 @@
 
       // Just testing stuff:
       $('#sub1').on('click', function() {
-        val1 = $('#in1').val();
-        val2 = $('#in2').val();
-        console.log(val1, val2);
+        // val1 = $('#in1').val();
+        // val2 = $('#in2').val();
+        // console.log(val1, val2);
+        var choice = $('.target-avg').val();
 
         // Oooh right, the whole point of Ajax is *not* to change the URL...
-        $.get(`/stuff?val1=${val1}&val2=${val2}`)
+        $.get('/dataframe?choice=' + choice)
         // $.get('/hi')
         .done(function(res) {
           console.log(res);
           // Oooooh of course, need to restart the server when we make *any* changes now.
-          $(".res").append(res)
+          // $(".res").append(res)
         })
         .catch(function(err) {
           console.log(err);
