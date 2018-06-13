@@ -32,20 +32,41 @@ def yo():
 
 
 
-# # This is the meat of our query:
-# specific2 = df[df['rise'] == 'Appointment by Army']
-# specific3 = df[df['cause'] == 'Assassination']
-# specific4 = df[df['birth.prv'] == 'Italia']
-# specific5 = df[df['cause'] == 'Assassination']
-#
-# print(specific4.groupby('cause').count()['name'])
-#
+# NOTE: problem with "rise" because of ...multiple words? I'm pretty sure.
+
+
+
+@app.route('/getParticulars')
+def here():
+    choice = request.args.get('part')
+    # print(set(df[choice]))
+    str_resp = str(set(df[choice]))
+    result = str_resp.split(',')
+
+    return str(result)
+    # return set(df[choice])
+
+@app.route('/query')
+def there(): # Interesting, names of these functions must be unique (across all routes??)
+    type_x = request.args.get('type')
+    choice_x = request.args.get('choice')
+    slice_x = request.args.get('slice')
+
+    # Incredible: this is all we need to replicate the functionality that required sooooo much Node/PostgreSQL code...
+    specific = df[df[type_x] == choice_x]
+    result = specific.groupby(slice_x).count()['name']
+
+    return str(result)
+
+
+
+
 # # Then when the user clicks on a specific bar (e.g. Italia, 10), they can see the percentage of all those assassinated killed in Italia VS the overall percentage of Italians (Given that you're assassinated, what's the likelihood that you're from Italia? What's the overall likelihood of being from Italia?)
 # # Could also show total assassinated percentage vs percentage of all those from Italia that were assassinated. (Given that you're from Italia, what's the likelihood you get assassinated? What's the overall likelihood of getting assassinated?)
 #
 # # Beautiful, this is how we get titles for the dropdown boxes:
 # print(set(df['dynasty']))
-# 
+#
 # # Tells us how many 'cause' records we have:
 # print(df.groupby('cause').count()['name'].sum())
 # # Tells us how many assassinations we have:

@@ -10,10 +10,29 @@
 
   <input type="text" id="in1" name="" value="">
   <input type="text" id="in2" name="" value="">
-  <button type="button" id="sub1" name="button"></button>
+  <button type="button" id="sub1" name="button">sub</button>
 
   <div class="res">
 
+  </div>
+
+  <div class="drops">
+    <select class="target1">
+      <option value="cause" selected="selected">Cause of Death</option>
+      <option value="killer">Killer</option>
+      <option value="birth.prv">Birth province</option>
+      <option value="dynasty">Dynasty</option>
+      <option value="rise">How rise</option>
+    </select>
+
+    <select class="target2">
+
+    </select>
+
+    <select class="target3">
+
+    </select>
+    <button type="button" name="button" class="subQuery">QUERY</button>
   </div>
 
   <!-- jQuery: -->
@@ -26,6 +45,69 @@
     console.log('what up tho');
 
     $(document).ready(function() {
+      // Load up the second and third selector:
+      var all = ['killer', 'birth.prv', 'dynasty', 'rise'];
+      $.get(`/getParticulars?part=cause`)
+      .done(function(res) {
+        res.split(',').forEach(item => {
+          item = item.replace(/[\'\"\{\}\]\[]/g, '');
+          $('.target2').append(`<option value=${item}>${item}</option>`);
+        });
+        all.forEach(item => {
+          $('.target3').append(`<option value=${item}>${item}</option>`);
+        });
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+
+      // Listen for changes on the first selector:
+      $('.target1').change(function() {
+        var all = ['cause', 'killer', 'birth.prv', 'dynasty', 'rise'];
+
+        console.log($('.target1').val());
+        var choice = $('.target1').val();
+        // Ok splice doesn't return a new array, just mutates the original one:
+        var all_reduced = all.splice(all.indexOf(choice), 1);
+        console.log(all_reduced, all);
+
+        $.get(`/getParticulars?part=${choice}`)
+        .done(function(res) {
+          // console.log(res, typeof(res));
+          $('.target2').empty();
+          $('.target3').empty();
+
+          // Don't forget to clear out values before appending:
+          res.split(',').forEach(item => {
+            item = item.replace(/[\'\"\{\}\]\[]/g, '');
+            // console.log(item);
+            $('.target2').append(`<option value=${item}>${item}</option>`);
+          });
+          all.forEach(item => {
+            $('.target3').append(`<option value=${item}>${item}</option>`);
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+      });
+
+      // This should actually be a submit button:
+      $('.subQuery').on('click', function() {
+        var type = $('.target1').val();
+        var choice = $('.target2').val();
+        var slice = $('.target3').val();
+        console.log(type, choice, slice);
+        $.get(`/query?type=${type}&choice=${choice}&slice=${slice}`)
+        .done(function(res) {
+          console.log(res);
+        })
+        .catch(function(err) {
+          console.log(err);
+        })
+      });
+
+      // Just testing stuff:
       $('#sub1').on('click', function() {
         val1 = $('#in1').val();
         val2 = $('#in2').val();
