@@ -20,34 +20,32 @@ def hello():
     # return str(df.head(20)['name'])
     return render_template('index.html', taco = 'dog') # Note: must import this
 
-@app.route('/hi')
-def hi():
-    return "<h2>whatup</h2>"
-
-# This works correctly when we hit the route manually, but not when we ping it via AJAX...
-# We'll have to use hrefs with anchor tags to change the route URL.
-@app.route('/stuff')
-def yo():
-    val1 = request.args.get('val1')
-    val2 = request.args.get('val2')
-    return "<h2>%s, %s</h2>" % (val1, val2)
+# @app.route('/hi')
+# def hi():
+#     return "<h2>whatup</h2>"
+#
+# # This works correctly when we hit the route manually, but not when we ping it via AJAX...
+# # We'll have to use hrefs with anchor tags to change the route URL.
+# @app.route('/stuff')
+# def yo():
+#     val1 = request.args.get('val1')
+#     val2 = request.args.get('val2')
+#     return "<h2>%s, %s</h2>" % (val1, val2)
 
 
 
 # NOTE: problem with "rise" because of ...multiple words? I'm pretty sure. Yeah, and multiple words break other queries as well. That's surely it.
 
 
-
+# Populate the second selector:
 @app.route('/getParticulars')
 def here():
     choice = request.args.get('part')
-    # print(set(df[choice]))
     str_resp = str(set(df[choice]))
     result = str_resp.split(',')
-
     return str(result)
-    # return set(df[choice])
 
+# Handle the full query, with type, particular and slice:
 @app.route('/query')
 def there(): # Interesting, names of these functions must be unique (across all routes??)
     type_x = request.args.get('type')
@@ -62,9 +60,31 @@ def there(): # Interesting, names of these functions must be unique (across all 
     specific = df[df[type_space] == choice_space]
     result = specific.groupby(slice_space).count()['name']
     # I'm also surprised at how fast it is, given how long Python takes to spin up every time.
-    return str(result)
+    return result.to_json(orient='split')
 
 
+# Get average life/reign-span split by category (e.g. dynasty, cause of death...)
+@app.route('/dataframe')
+def df_stuff():
+    # To return the entire dataframe as a json object (which I can't figure out how to parse...):
+    # return df.to_json(orient='split')
+
+    choice = request.args.get('choice')
+    res = df.groupby(choice).mean()
+    return str(res)
+
+@app.route('/likelihood')
+def like():
+    type_x = request.args.get('type')
+    choice = request.args.get('choice')
+    choice_string = re.sub('_', ' ', choice)
+
+
+    type_total = df.groupby(type_x).count()['name'].sum()
+    choice_total = df[df[type_x] == choice_string].count()['name']
+
+    # return str(choice_total) + type_x + choice + choice_string
+    return str(choice_total)
 
 
 # ADDING LIFESPANS AND REIGN-LENGTHS TO THE DATAFRAME -- should def be in own file/module:
@@ -130,17 +150,6 @@ def addToDF():
 # If we call this inside the route, it errors out the second time we try to ping it:
 addToDF()
 
-
-# Ideas: get average life/reign-span split by category (e.g. dynasty, cause of death...)
-
-
-@app.route('/dataframe')
-def df_stuff():
-    # return df.to_json(orient='split')
-
-    choice = request.args.get('choice')
-    res = df.groupby(choice).mean()
-    return str(res)
 
 
 

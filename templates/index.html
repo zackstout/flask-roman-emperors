@@ -87,8 +87,8 @@
           res.split(',').forEach(item => {
             item = item.replace(/[\'\"\{\}\]\[]/g, '');
             item = item.trim();
-            item = item.replace(/\s/g, '_');
-            $('.target2').append(`<option value=${item}>${item}</option>`);
+            item_val = item.replace(/\s/g, '_');
+            $('.target2').append(`<option value=${item_val}>${item}</option>`);
           });
           // Populate third slicing selector:
           all.forEach(item => {
@@ -102,20 +102,44 @@
 
       // This should actually be a submit button, not a change listener:
       $('.subQuery').on('click', function() {
-        var type = $('.target1').val();
+        var type_x = $('.target1').val();
         var choice = $('.target2').val();
         var slice = $('.target3').val();
-        console.log(type, choice, slice);
-        $.get(`/query?type=${type}&choice=${choice}&slice=${slice}`)
+        console.log(type_x, choice, slice);
+        $.get(`/query?type=${type_x}&choice=${choice}&slice=${slice}`)
         .done(function(res) {
-          console.log(res);
+          // console.log(typeof(res), res);
+          // YESSS JSON.parse() is what we needed:
+          console.log(JSON.parse(res));
+          // console.log(res.split(/\s+/));
+          var parsed = JSON.parse(res);
+
+
+          // Is the idea of finding these comparative averages just a poor man's way of doing correlation? How do the two processes relate to one another?
+
+          // Or maybe, this is fortuitous we wrote things this way, the better idea is to overlay graph of distribution for this particular against whole (e.g. causes of death among Italia-originators vs overall causes of death)
+          
+          // For each item, e.g. province of origin, in the SLICE, determine how likely someone is to be from that SLICE:
+          parsed.index.forEach(item => {
+            item = item.replace(/\s/g, '_');
+
+            // The bug was that we were sending type instead of slice:
+            $.get(`/likelihood?choice=${item}&type=${slice}`)
+            .done(function(res) {
+              console.log(item, res);
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+          });
+
         })
         .catch(function(err) {
           console.log(err);
         })
       });
 
-      // Just testing stuff:
+      // Average function:
       $('#sub1').on('click', function() {
         var choice = $('.target-avg').val();
 

@@ -3,8 +3,8 @@ Working with this [dataset](https://github.com/zonination/emperors/blob/master/e
 
 ## Flask:
 Ok, flask seems pretty easy. We can:
-- Route to different pages; can presumably be hit by AJAX requests;
-- Pass data into our HTML templates;
+- Route to different pages that can be hit by AJAX requests;
+- Pass data into our HTML templates; (we haven't actually done this yet -- just passing data around via AJAX -- I suppose if we split into multiple files maybe the other way would be better?)
 - Return images of matplotlib charts to the client.
 
 ## Pandas:
