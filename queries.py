@@ -197,9 +197,6 @@ def playWithGB():
 
 
 
-
-
-
 # Dictionaries can be converted easily into Series.
 # Boolean indexing: cities[cities > 1000]
 # Pass a dictionary of lists to the Dataframes constructor
@@ -230,11 +227,3 @@ def playWithGB():
 
 
 # would be good to write a function that checks how many of those (e.g.) from Italia assassinated, VS how often *everyone* was assassinated.
-
-
-
-# Length of life
-# Length of reign
-# Distance of birth city from Rome
-# How rise? How die?
-# Chunk by dynasty
