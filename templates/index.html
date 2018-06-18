@@ -3,9 +3,14 @@
   <head>
     <meta charset="utf-8">
     <title>flask!</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+
   </head>
   <body>
     <h2>Flask!!! {{taco}}</h2>
+    <canvas id="graphic_reports" width="600" height="500"></canvas>
   </body>
 
   <!-- For the mean query: -->
@@ -110,28 +115,65 @@
         .done(function(res) {
           // console.log(typeof(res), res);
           // YESSS JSON.parse() is what we needed:
-          console.log(JSON.parse(res));
+          // console.log(JSON.parse(res));
           // console.log(res.split(/\s+/));
           var parsed = JSON.parse(res);
+
+          var totals = _.zipObject(parsed.index, parsed.data);
 
 
           // Is the idea of finding these comparative averages just a poor man's way of doing correlation? How do the two processes relate to one another?
 
           // Or maybe, this is fortuitous we wrote things this way, the better idea is to overlay graph of distribution for this particular against whole (e.g. causes of death among Italia-originators vs overall causes of death)
-          
-          // For each item, e.g. province of origin, in the SLICE, determine how likely someone is to be from that SLICE:
-          parsed.index.forEach(item => {
-            item = item.replace(/\s/g, '_');
 
-            // The bug was that we were sending type instead of slice:
-            $.get(`/likelihood?choice=${item}&type=${slice}`)
-            .done(function(res) {
-              console.log(item, res);
-            })
-            .catch(function(err) {
-              console.log(err);
-            });
-          });
+          // Why do it like this? Why not just get *all* the slices (e.g. provinces of origin)? Why just the ones that e.g. someone was assassinated in?
+          // For each item, e.g. province of origin, in the SLICE, determine how likely someone is to be from that SLICE:
+          // parsed.index.forEach(item => {
+          //   item = item.replace(/\s/g, '_');
+          //
+          //   // The bug was that we were sending type instead of slice:
+          //   $.get(`/likelihood?choice=${item}&type=${slice}`)
+          //   .done(function(res) {
+          //     console.log(item, res);
+          //   })
+          //   .catch(function(err) {
+          //     console.log(err);
+          //   });
+          // });
+
+          $.get(`/grouplikelihood?slice=${slice}`)
+          .done(function(res2) {
+            // console.log(JSON.parse(res));
+            var parsed2 = JSON.parse(res2)
+            // console.log(parsed2);
+            var totals2 = _.zipObject(parsed2.index, parsed2.data);
+
+            console.log(totals, totals2);
+
+            // populate missing values in totals:
+            for (key in totals2) {
+              if (!totals.hasOwnProperty(key)) {
+                totals[key] = 0;
+              }
+            }
+
+            console.log(totals, totals2);
+
+            var labs = [];
+            var data1 = [];
+            var data2 = [];
+
+            for (key in totals) {
+              labs.push(key);
+              data1.push(totals[key]);
+              data2.push(totals2[key]);
+            }
+
+            draw_graphicReport(labs, data1, data2);
+          })
+          .catch(function(err) {
+            console.log(err);
+          })
 
         })
         .catch(function(err) {
@@ -154,7 +196,39 @@
           console.log(err);
         });
       });
-    });
+
+
+
+
+function draw_graphicReport(labs, data1, data2) {
+	config_graphic_reports =
+	{
+		type: 'bar',
+		data: {
+			labels: labs,
+			datasets:
+			[{
+				label: "Specific",
+				data: data1,
+				backgroundColor: "rgba(153,255,51,1)"
+			},
+			{
+				label: "Total",
+				data: data2,
+				backgroundColor: "rgba(255,153,0,1)"
+			}]
+		}
+	}
+	graphic_reports = new Chart(document.getElementById("graphic_reports").getContext("2d"), config_graphic_reports);
+}
+
+// draw_graphicReport();
+
+
+
+
+
+ });
   </script>
 
 </html>

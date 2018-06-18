@@ -87,6 +87,18 @@ def like():
     return str(choice_total)
 
 
+@app.route('/grouplikelihood')
+def glike():
+    slice_x = request.args.get('slice')
+    slice_str = re.sub('_', ' ', slice_x)
+
+    totals = df.groupby(slice_str).count()['name']
+    # type_total = df.groupby(type_x).count()['name'].sum()
+    # choice_total = df[df[type_x] == choice_string].count()['name']
+    return (totals.to_json(orient="split"))
+
+
+
 # ADDING LIFESPANS AND REIGN-LENGTHS TO THE DATAFRAME -- should def be in own file/module:
 spans = []
 
