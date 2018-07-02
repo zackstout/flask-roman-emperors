@@ -19,3 +19,7 @@ And we're making progress with the data analysis via Pandas. Ideas:
 - [ ] Avg. length of reign by killer, or by dynasty
 - [ ] Chart causes of death as lines against time.
 - [ ] I wonder what the best way to handle the BC values is... just manually add "neg" to them in the CSV and then interpret them as negative numbers?
+
+## Screenshot:
+![image](https://user-images.githubusercontent.com/29472568/42182843-40897828-7e05-11e8-90b5-239f99a2c28e.png)
+
